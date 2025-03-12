@@ -1,0 +1,116 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  docker_stats:
+    endpoint: unix:///var/run/docker.sock
+  # Host metrics
+  hostmetrics:
+    root_path: /hostfs
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      disk:
+      load:
+      filesystem:
+        exclude_mount_points:
+          mount_points:
+            - /dev/*
+            - /proc/*
+            - /sys/*
+            - /run/k3s/containerd/*
+            - /var/lib/docker/*
+            - /var/lib/kubelet/*
+            - /snap/*
+          match_type: regexp
+        exclude_fs_types:
+          fs_types:
+            - autofs
+            - binfmt_misc
+            - bpf
+            - cgroup2
+            - configfs
+            - debugfs
+            - devpts
+            - devtmpfs
+            - fusectl
+            - hugetlbfs
+            - iso9660
+            - mqueue
+            - nsfs
+            - overlay
+            - proc
+            - procfs
+            - pstore
+            - rpc_pipefs
+            - securityfs
+            - selinuxfs
+            - squashfs
+            - sysfs
+            - tracefs
+          match_type: strict
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+      network:
+      processes:
+      process:
+        mute_process_exe_error: true
+        mute_process_io_error: true
+        mute_process_user_error: true
+extensions:
+  bearertokenauth:
+    scheme: SUSEObservability
+    token: "${env:API_KEY}"
+
+exporters:
+  debug:
+  otlp/so:
+    auth:
+      authenticator: bearertokenauth
+    endpoint: https://otlp-rbeckers.sandbox-main.sandbox.stackstate.io:443
+  otlphttp/prometheus:
+    endpoint: http://prometheus.127.0.0.1.sslip.io:80/api/v1/otlp
+  otlphttp/jaeger:
+    endpoint: http://jaeger-collector.127.0.0.1.sslip.io:80
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 5s
+    limit_percentage: 80
+    spike_limit_percentage: 25
+
+connectors:
+  spanmetrics/so:
+    namespace: otel_span
+  spanmetrics:
+
+service:
+  extensions: [bearertokenauth]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [debug, spanmetrics, spanmetrics/so, otlphttp/jaeger, otlp/so]
+    metrics:
+      receivers: [hostmetrics, otlp, spanmetrics]
+      processors: [memory_limiter, batch]
+      exporters: [debug, otlphttp/prometheus, otlp/so]
+    metrics/so:
+      receivers: [hostmetrics, otlp,spanmetrics/so]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/so]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter,batch]
+      exporters: [debug]
