@@ -145,22 +145,22 @@ opentelemetry-collector:
       - health_check
       - bearertokenauth/so
       pipelines:        
-      logs:
-        receivers: [otlp]
-        processors: [k8sattributes, memory_limiter, resource, batch]
-        exporters: [opensearch, debug]
-      metrics:
-        receivers: [httpcheck/frontend-proxy, redis, otlp, spanmetrics]
-        processors: [k8sattributes, memory_limiter, resource, batch]
-        exporters: [otlphttp/prometheus]
-      metrics/so:
-        receivers: [httpcheck/frontend-proxy, redis, otlp, spanmetrics/so]
-        processors: [k8sattributes, memory_limiter, resource, batch]
-        exporters: [otlp/so]
-      traces:
-        receivers: [otlp, jaeger, zipkin]
-        processors: [k8sattributes, memory_limiter, resource, transform, batch]
-        exporters: [otlp, otlp/so, spanmetrics/so, spanmetrics]
+        logs:
+          receivers: [otlp]
+          processors: [k8sattributes, memory_limiter, resource, batch]
+          exporters: [opensearch, debug]
+        metrics:
+          receivers: [httpcheck/frontend-proxy, redis, otlp, spanmetrics]
+          processors: [k8sattributes, memory_limiter, resource, batch]
+          exporters: [otlphttp/prometheus]
+        metrics/so:
+          receivers: [httpcheck/frontend-proxy, redis, otlp, spanmetrics/so]
+          processors: [k8sattributes, memory_limiter, resource, batch]
+          exporters: [otlp/so]
+        traces:
+          receivers: [otlp, jaeger, zipkin]
+          processors: [k8sattributes, memory_limiter, resource, transform, batch]
+          exporters: [otlp, otlp/so, spanmetrics/so, spanmetrics]
       telemetry:
         metrics:
           address: ${env:MY_POD_IP}:8888
