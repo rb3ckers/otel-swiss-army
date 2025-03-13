@@ -67,6 +67,18 @@ receivers:
         mute_process_exe_error: true
         mute_process_io_error: true
         mute_process_user_error: true
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 5s
+    limit_percentage: 80
+    spike_limit_percentage: 25
+  resourcedetection/host:
+    detectors: ["system"]
+    system:
+      hostname_sources: ["os"]
+
 extensions:
   bearertokenauth:
     scheme: SUSEObservability
@@ -83,13 +95,6 @@ exporters:
   otlphttp/jaeger:
     endpoint: http://jaeger-collector.127.0.0.1.sslip.io:80
 
-processors:
-  batch:
-  memory_limiter:
-    check_interval: 5s
-    limit_percentage: 80
-    spike_limit_percentage: 25
-
 connectors:
   spanmetrics/so:
     namespace: otel_span
@@ -100,15 +105,15 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, batch, resourcedetection/host]
       exporters: [debug, spanmetrics, spanmetrics/so, otlphttp/jaeger, otlp/so]
     metrics:
       receivers: [hostmetrics, otlp, spanmetrics]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, batch, resourcedetection/host]
       exporters: [debug, otlphttp/prometheus, otlp/so]
     metrics/so:
       receivers: [hostmetrics, otlp,spanmetrics/so]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, batch, resourcedetection/host]
       exporters: [otlp/so]
     logs:
       receivers: [otlp]
