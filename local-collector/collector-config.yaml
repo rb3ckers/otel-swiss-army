@@ -98,7 +98,6 @@ exporters:
 connectors:
   spanmetrics/so:
     namespace: otel_span
-  spanmetrics:
 
 service:
   extensions: [bearertokenauth]
@@ -106,13 +105,13 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch, resourcedetection/host]
-      exporters: [debug, spanmetrics, spanmetrics/so, otlphttp/jaeger, otlp/so]
+      exporters: [debug, spanmetrics/so, otlphttp/jaeger, otlp/so]
     metrics:
-      receivers: [hostmetrics, otlp, spanmetrics]
+      receivers: [hostmetrics, otlp]
       processors: [memory_limiter, batch, resourcedetection/host]
-      exporters: [debug, otlphttp/prometheus, otlp/so]
+      exporters: [debug, otlphttp/prometheus]
     metrics/so:
-      receivers: [hostmetrics, otlp,spanmetrics/so]
+      receivers: [hostmetrics, otlp, spanmetrics/so]
       processors: [memory_limiter, batch, resourcedetection/host]
       exporters: [otlp/so]
     logs:
