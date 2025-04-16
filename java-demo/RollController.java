@@ -1,3 +1,7 @@
+/**
+ * Based on the open telemetry docs Java getting started guide
+ * https://opentelemetry.io/docs/languages/java/getting-started/
+ */
 package otel;
 
 import java.util.Optional;

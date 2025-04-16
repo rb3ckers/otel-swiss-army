@@ -89,7 +89,7 @@ exporters:
   otlp/so:
     auth:
       authenticator: bearertokenauth
-    endpoint: https://otlp-rbeckers.sandbox-main.sandbox.stackstate.io:443
+    endpoint: https://otlp-swiss-army-knife.dev.stackstate.io:443
   otlphttp/prometheus:
     endpoint: http://prometheus.127.0.0.1.sslip.io:80/api/v1/otlp
   otlphttp/jaeger:

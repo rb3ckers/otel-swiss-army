@@ -53,7 +53,7 @@ opentelemetry-collector:
       otlp/so:
         auth:
           authenticator: bearertokenauth/so
-        endpoint: https://otlp-rbeckers.sandbox-main.sandbox.stackstate.io:443
+        endpoint: https://otlp-swiss-army-knife.dev.stackstate.io:443
       otlphttp/prometheus:
         endpoint: http://prometheus:9090/api/v1/otlp
         tls:
@@ -148,7 +148,7 @@ opentelemetry-collector:
         logs:
           receivers: [otlp]
           processors: [k8sattributes, memory_limiter, resource, batch]
-          exporters: [opensearch, debug]
+          exporters: [opensearch]
         metrics:
           receivers: [httpcheck/frontend-proxy, redis, otlp, spanmetrics]
           processors: [k8sattributes, memory_limiter, resource, batch]
@@ -160,7 +160,7 @@ opentelemetry-collector:
         traces:
           receivers: [otlp, jaeger, zipkin]
           processors: [k8sattributes, memory_limiter, resource, transform, batch]
-          exporters: [otlp, otlp/so, spanmetrics/so, spanmetrics]
+          exporters: [otlp, otlp/so, spanmetrics/so, spanmetrics, debug]
       telemetry:
         metrics:
           address: ${env:MY_POD_IP}:8888
