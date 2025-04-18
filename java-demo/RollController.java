@@ -39,13 +39,7 @@ public class RollController {
     var span = tracer.spanBuilder("roll-the-dice").startSpan();
     
     int result = this.getRandomNumber(1, 6);
-    if (player.isPresent()) {
-      logger.info("{} is rolling the dice: {}", player.get(), result);
-      rollCounter.add(1, Attributes.of("player", player.get()));
-    } else {
-      logger.info("Anonymous player is rolling the dice: {}", result);
-      rollCounter.add(1);
-    }
+    rollCounter.add(1);
     
     span.setAttribute("result", result);
     span.end();

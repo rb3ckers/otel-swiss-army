@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dice-roller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dice-roller
+  template:
+    metadata:
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "open-telemetry/otel-instrumentation"
+      labels:
+        app.kubernetes.io/name: "dice-roller"
+        app.kubernetes.io/version: "1.0.0"
+        app.kubernetes.io/part-of: "dice-demo"
+    spec:
+      containers:
+      - name: dice-roller
+        image: ghcr.io/rb3ckers/dice-roller-app:java
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dice-roller
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app.kubernetes.io/name: dice-roller
